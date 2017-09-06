@@ -1,4 +1,4 @@
-FROM lsiobase/alpine.nginx
+FROM lsiobase/alpine.nginx:3.6
 MAINTAINER Mike Weaver
 
 # set version label
@@ -12,6 +12,10 @@ RUN \
 	curl \
 	git \
 	php7-apcu \
+	php7-tidy \
+	php7-tokenizer \
+	php7-ctype \
+	php7-cgi \
 	php7-curl \
 	php7-dom \
 	php7-gd \
@@ -24,10 +28,14 @@ RUN \
 	php7-pcntl \
 	php7-pdo_mysql \
 	php7-posix \
-	tar && \
+	php7-phar \
+	tar
 
- curl -sS https://getcomposer.org/installer | php && \
- mv composer.phar /usr/local/bin/composer
+RUN \
+# install composer
+ curl \
+ -sS https://getcomposer.org/installer \
+	| php -- --install-dir=/usr/bin --filename=composer && \
 
 # link php7 to php, fix update daemon
  ln -sf /usr/bin/php7 /usr/bin/php

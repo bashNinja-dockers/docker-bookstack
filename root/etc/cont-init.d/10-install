@@ -4,13 +4,36 @@
 mkdir -p \
 	/config/www/bookstack
 
+# Setup ENV Config
+if [ ! -e "/config/www/bookstack/.env" ]; then
+	cp /config/www/bookstack/.env.example /config/www/bookstack/.env
+fi
+if [ ! -z "$DB_HOST" ]; then
+	sed -i -e "s/DB_HOST=.*$/DB_HOST=$DB_HOST/g" /config/www/bookstack/.env
+fi
+if [ ! -z "$DB_DATABASE" ]; then
+	sed -i -e "s/DB_DATABASE=.*$/DB_DATABASE=$DB_DATABASE/g" /config/www/bookstack/.env
+fi
+if [ ! -z "$DB_USERNAME" ]; then
+	sed -i -e "s/DB_USERNAME=.*$/DB_USERNAME=$DB_USERNAME/g" /config/www/bookstack/.env
+fi
+if [ ! -z "$DB_PASSWORD" ]; then
+	sed -i -e "s/DB_PASSWORD=.*$/DB_PASSWORD=$DB_PASSWORD/g" /config/www/bookstack/.env
+fi
+if [ ! -z "$DEBUG" ]; then
+	sed -i -e "s/DEBUG=.*$/DEBUG=$DEBUG/g" /config/www/bookstack/.env
+fi
+
 # install bookstack
 if [ ! -e "/config/www/bookstack/server.php" ]; then
-	curl -L https://github.com/BookStackApp/BookStack/archive/release.zip | tar -xzvC /config/www/bookstack --strip-components 1
+	curl -L curl -L https://codeload.github.com/BookStackApp/BookStack/tar.gz/release | tar -xzvC /config/www/bookstack --strip-components 1
 	cd /config/www/bookstack
 	composer install
-	php artisan key:generate
-	php artisan migrate
+	
+	# Update database
+	php artisan key:generate --force
+	php artisan migrate --force
+	
 fi
 
 # permissions
