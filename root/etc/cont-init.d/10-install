@@ -1,0 +1,18 @@
+#!/usr/bin/with-contenv sh
+
+# make our folders
+mkdir -p \
+	/config/www/bookstack
+
+# install bookstack
+if [ ! -e "/config/www/bookstack/server.php" ]; then
+	curl -L https://github.com/BookStackApp/BookStack/archive/release.zip | tar -xzvC /config/www/bookstack --strip-components 1
+	cd /config/www/bookstack
+	composer install
+	php artisan key:generate
+	php artisan migrate
+fi
+
+# permissions
+chown -R abc:abc \
+	/config
