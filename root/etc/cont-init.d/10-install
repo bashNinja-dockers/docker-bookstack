@@ -4,6 +4,17 @@
 mkdir -p \
 	/config/www/bookstack
 
+# install bookstack
+if [ ! -e "/config/www/bookstack/server.php" ]; then
+	curl -L curl -L https://codeload.github.com/BookStackApp/BookStack/tar.gz/release | tar -xzvC /config/www/bookstack --strip-components 1
+	cd /config/www/bookstack
+	composer install
+	
+	# Update database
+	php artisan key:generate --force
+	php artisan migrate --force
+fi
+
 # Setup ENV Config
 if [ ! -e "/config/www/bookstack/.env" ]; then
 	cp /config/www/bookstack/.env.example /config/www/bookstack/.env
@@ -22,18 +33,6 @@ if [ ! -z "$DB_PASSWORD" ]; then
 fi
 if [ ! -z "$DEBUG" ]; then
 	sed -i -e "s/DEBUG=.*$/DEBUG=$DEBUG/g" /config/www/bookstack/.env
-fi
-
-# install bookstack
-if [ ! -e "/config/www/bookstack/server.php" ]; then
-	curl -L curl -L https://codeload.github.com/BookStackApp/BookStack/tar.gz/release | tar -xzvC /config/www/bookstack --strip-components 1
-	cd /config/www/bookstack
-	composer install
-	
-	# Update database
-	php artisan key:generate --force
-	php artisan migrate --force
-	
 fi
 
 # permissions
